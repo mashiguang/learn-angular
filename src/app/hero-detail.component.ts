@@ -1,12 +1,38 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap } from "@angular/router";
+import { Location } from "@angular/common";
+
+import "rxjs/add/operator/switchMap";   //这是什么
 
 import { Hero } from './hero';
+import { HeroService } from "./hero.service";
+
+
+
 @Component({
   selector: 'hero-detail',
   templateUrl: './hero-detail.component.html'
 })
-export class HeroDetailComponent {
-  @Input() hero: Hero;
+export class HeroDetailComponent implements OnInit {
+  hero: Hero;
+
+  constructor(
+    private heroService: HeroService,
+    private route: ActivatedRoute,
+    private location: Location
+  ) {}
+
+  ngOnInit(): void {
+    this.route.paramMap
+      .switchMap((params: ParamMap) => this.heroService.getHero(+params.get('id')))
+      .subscribe(hero => this.hero = hero);
+
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
 }
 
 // 这个class和@Component的关系是什么?
